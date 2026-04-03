@@ -1,0 +1,52 @@
+@startuml architecture
+skinparam componentStyle uml2
+skinparam nodesep 50
+skinparam ranksep 40
+skinparam ArrowColor #666666
+skinparam defaultFontName Arial
+
+title ToxicShield Architecture Diagram
+
+package "Client Layer (Google Chrome)" #e1f5fe {
+  component "ToxicShield Extension" as ext {
+    port "Active Tab / Webpage" as dom
+    component "Side Panel Workspace (UI/UX)" as ui
+    component "Background Service Worker" as sw
+    component "ONNX Edge AI Worker\n(transformers.js)" as webworker
+    
+    dom <-left-> sw : Extracts highlighted text\n(Context Menu)
+    ui <--> sw : Syncs state (Storage/Messages)
+    ui <--> webworker : Local Inference execution
+  }
+}
+
+package "Backend Server Layer (Local or Cloud)" #fff9c4 {
+  component "FastAPI Application" as api {
+    interface "REST API HTTP" as rest
+    component "POST /predict" as pred
+    component "POST /explain" as expl
+    
+    rest -down- pred
+    rest -down- expl
+  }
+  
+  component "Local ML Environment" as ml {
+    component "HuggingFace Transformers" as hf
+    artifact "Transformer Model" as model
+    
+    hf -> model : Loads weights
+    pred --> hf : Batch Inference\n(Safe/Toxic + Score)
+  }
+}
+
+cloud "External Cloud Infrastructure" #f3e5f5 {
+  database "Vector Database\n(e.g., Pinecone/Qdrant)" as vdb
+  node "LLM API\n(e.g., GPT-4o / Claude 3.5)" as llm
+  
+  expl --> vdb : Semantic Search\n(Query Embeddings)
+  expl --> llm : Request generation\n(Text + RAG Context)
+}
+
+sw =down=> rest : Sends JSON Payload
+
+@enduml

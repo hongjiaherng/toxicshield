@@ -1,0 +1,75 @@
+@startuml seq_diagram_cloud_ai
+skinparam BoxPadding 10
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 150
+
+actor "User" as user
+
+box "Client-Side (Google Chrome)" #e1f5fe
+participant "Extension UI\n(HTML/CSS)" as ui
+participant "Extension Logic\n(TypeScript/Bun)" as ext
+end box
+
+box "Backend Server (Cloud/Local)" #fff9c4
+participant "FastAPI Backend\n(uvicorn)" as api
+participant "ML Engine\n(PyTorch / demoji)" as ml
+end box
+
+box "Cloud Infrastructure" #f3e5f5
+database "Vector DB\n(Pinecone/Qdrant)" as vdb
+participant "LLM API\n(GPT-4o/Claude/Gemini)" as llm
+end box
+
+== Text Classification Phase ==
+user -> ui : Highlights text & clicks "Analyze"
+activate ui
+ui -> ext : Capture highlighted text
+activate ext
+
+ext -> api : POST /predict { text }
+activate api
+
+api -> ml : Preprocess (translate emojis, normalize)
+activate ml
+ml --> api : Clean text
+
+api -> ml : Run Model Inference
+ml --> api : Toxicity score & label
+deactivate ml
+
+api --> ext : Return JSON result
+deactivate api
+
+ext --> ui : Update UI with prediction
+deactivate ext
+ui --> user : Display Toxicity Score
+deactivate ui
+
+== On-Demand Explainability Phase (RAG) ==
+user -> ui : Clicks "Why is this toxic?"
+activate ui
+ui -> ext : Trigger explanation request
+activate ext
+
+ext -> api : POST /explain { text }
+activate api
+
+api -> vdb : Query embeddings for similar historical text
+activate vdb
+vdb --> api : Return top-k toxic comments
+deactivate vdb
+
+api -> llm : Send Prompt (Original Text + VDB Context)
+activate llm
+llm --> api : Return explanation string
+deactivate llm
+
+api --> ext : Return JSON explanation
+deactivate api
+
+ext --> ui : Render explanation in popup DOM
+deactivate ext
+ui --> user : Read explanation
+deactivate ui
+
+@enduml

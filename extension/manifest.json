@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "ToxicShield",
+  "version": "1.0",
+  "description": "Analyze highlighted text for toxicity.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "sidePanel",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "action": {
+    "default_title": "ToxicShield"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel.html"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["dist/*.wasm", "dist/*.mjs"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
+}

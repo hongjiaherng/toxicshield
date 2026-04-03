@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node / Bun
+node_modules/
+dist/
+.bun/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Environment specifics (optional depending on use cases)
+*.local
+
+# OS
+.DS_Store
+Thumbs.db

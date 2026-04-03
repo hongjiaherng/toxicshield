@@ -1,0 +1,66 @@
+@startuml seq_diagram_edge_ai
+skinparam BoxPadding 10
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 150
+
+actor "User" as user
+
+box "Client-Side (Google Chrome)" #e1f5fe
+participant "Extension UI\n(Side Panel)" as ui
+participant "Background Engine\n(Web Worker / ONNX)" as engine
+database "Browser Storage\n(Cache API)" as cache
+end box
+
+box "Cloud Infrastructure" #f3e5f5
+participant "Hugging Face Hub\n(Model Weights)" as s3
+participant "FastAPI Server" as api
+database "Vector DB (Pending)" as vdb
+participant "LLM API (Pending)" as llm
+end box
+
+== Initialization Phase (First Run Only) ==
+engine -> cache : Check for existing model weights
+activate engine
+cache --> engine : Result: Not found
+engine -> s3 : Fetch quantized ONNX Model weights
+activate s3
+s3 --> engine : Return weights payload
+deactivate s3
+engine -> cache : Save weights for future sessions
+deactivate engine
+
+== Local Inference Phase (Zero Latency) ==
+user -> ui : Highlights text on webpage
+activate ui
+ui -> engine : POST highlighted text
+activate engine
+engine -> cache : Load weights into memory
+cache --> engine : Weights loaded
+engine -> engine : Run text classification
+engine --> ui : Return Toxicity Score (e.g., 85%)
+deactivate engine
+ui --> user : Display Toxicity Score
+deactivate ui
+
+== On-Demand Explainability Phase (RAG API) ==
+user -> ui : Clicks "Why?" button
+activate ui
+ui -> api : POST /explain { text } (Pending Implementation)
+activate api
+
+api -> vdb : Query with text embeddings (Pending)
+activate vdb
+vdb --> api : Return top-k similar texts
+deactivate vdb
+
+api -> llm : Send Prompt to LLM (Pending)
+activate llm
+llm --> api : Return explanation string
+deactivate llm
+
+api --> ui : Return final explanation
+deactivate api
+ui --> user : Display explanation to user
+deactivate ui
+
+@enduml
