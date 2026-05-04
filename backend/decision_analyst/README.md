@@ -47,7 +47,6 @@ print(result.justification)  # e.g. "The text features direct personal insults..
 | `gpt`     | `OPENAI_API_KEY`, `OPENAI_API_BASE`      | `gpt-4o-mini`        |
 | `claude`  | `ANTHROPIC_API_KEY`, `ANTHROPIC_API_BASE`| `claude-sonnet-4-6`  |
 
-Env vars are loaded from `backend/.env` via `dotenv` (follows standard `.env` lookup — places a `.env` at `backend/` root).
 
 ### `explainer.explain(input_text, predicted_label, similar_examples) → ExplanationResult`
 
