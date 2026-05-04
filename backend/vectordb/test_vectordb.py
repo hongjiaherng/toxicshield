@@ -3,9 +3,7 @@ Test suite for Hybrid Toxicity Vector Database.
 Validates embedding creation, insertion, and retrieval.
 """
 
-import sys
-import os
-import logging
+import sys, os, logging
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 

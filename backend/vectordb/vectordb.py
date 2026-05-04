@@ -6,7 +6,7 @@ from qdrant_client.http.models import (
 from fastembed import TextEmbedding, SparseTextEmbedding
 from logging.handlers import RotatingFileHandler
 from typing import List, Dict
-from config import COLLECTION_NAME, DENSE_MODEL, SPARSE_MODEL, DENSE_EMBEDDING_SIZE
+from vectordb.config import COLLECTION_NAME, DENSE_MODEL, SPARSE_MODEL, DENSE_EMBEDDING_SIZE
 import os, logging
 
 # load environmental variables
